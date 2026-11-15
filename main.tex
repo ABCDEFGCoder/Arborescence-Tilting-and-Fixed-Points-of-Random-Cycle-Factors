@@ -1,0 +1,457 @@
+\documentclass[11pt]{article}
+
+\usepackage[hmargin=1.08in,vmargin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\DeclareMathOperator{\per}{per}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\KL}{\mathrm{D}}
+\newcommand{\Ent}{\mathsf{H}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\Frob}{\mathrm{F}}
+\newcommand{\trans}{\mathsf{T}}
+\newcommand{\cM}{\mathcal{M}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\title{\textbf{Arborescence Tilting and Fixed Points of Random Cycle Factors}}
+\author{Zixuan Ye \and GPT-6.1 Sol}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove that a uniform random cycle factor of an \(n\)-vertex \(d\)-regular digraph has \(O(n/d)\) expected fixed points. A cycle switch shows that weighting perfect matchings by arborescence counts realizes prescribed doubly stochastic marginals exactly. We control the relative entropy of this weighting by comparing directed and symmetrized tree determinants. A partition built from the energy of selected spectral directions controls the skew contribution and yields uniform exponential-moment bounds for overlaps with prescribed edges.
+\end{abstract}
+
+\section{Introduction}
+
+A digraph here has at most one arc for each ordered pair of vertices and may have loops. It is \(d\)-regular if each vertex has in-degree and out-degree \(d\). A cycle factor is a permutation \(\pi\) of the vertices for which \(v\to\pi(v)\) is an arc for every \(v\). A fixed point is a vertex for which \(\pi(v)=v\). The size parameter \(n\) is a positive integer throughout.
+
+Christoph, Dragani\'c, Gir\~ao, Hurley, Michel, and M\"uyesser proved an \(O(n\log d/d)\) bound on the expected total number of cycles of a uniform cycle factor as \(d\) grows \cite{ChristophEtAl}. They asked whether the expected number of fixed points is \(O(n/d)\) \cite[Problem~4.2]{ChristophEtAl}. Zheng obtained the bound \(O(n\log d/(d\log\log d))\) for fixed points by revealing the fixed-point set and comparing the number of remaining completions with a lower bound for the entire graph \cite[Theorem~1.2]{Zheng}. This comparison uses the permanent bounds of Br\`egman and Schrijver \cite{Bregman,Schrijver}.
+
+\begin{theorem}[Fixed points]\label{thm:fixed}
+There is an absolute constant \(C\) such that for every \(n\)-vertex \(d\)-regular digraph with \(d\ge 1\), a uniform random cycle factor \(\pi\) satisfies
+\[
+ \E\bigl|\{v:\pi(v)=v\}\bigr| \le C\frac{n}{d}.
+\]
+The order \(n/d\) is attained when \(d\) divides \(n\), by the disjoint union of \(n/d\) complete digraphs on \(d\) vertices with a loop at each vertex.
+\end{theorem}
+
+The bipartite representation of a digraph replaces each vertex \(v\) by a left copy and a right copy and each arc \(u\to v\) by an edge \(u_Lv_R\). A cycle factor corresponds to a perfect matching, and the fixed points are its overlaps with the edges representing loops. The bound for overlaps holds for arbitrary prescribed edge sets.
+
+\begin{theorem}[Matching overlaps]\label{thm:overlap}
+Let \(G\) be a simple \(d\)-regular bipartite graph with \(n\) vertices in each part and \(d\ge 1\). Let \(M\) be a uniform random perfect matching. For every \(t>0\) there is a constant \(C_t\) depending only on \(t\) such that every \(J\subseteq E(G)\) satisfies
+\[
+ \log \E \exp\bigl(t|M\cap J|\bigr)
+ \le C_t\frac{n+|J|}{d}.
+\]
+\end{theorem}
+
+At \(t=1\), Jensen's inequality gives \(\E |M\cap J|\le C_1(n+|J|)/d\), so in particular \(\E |M\cap J|=O(n/d)\) for every \(J\) of size at most \(n\). Granet and Joos established asymptotically uniform edge marginals and a Poisson approximation for overlaps with a fixed matching in dense robustly expanding regular bipartite graphs \cite[Theorem~3.3]{GranetJoos}. In general regular bipartite graphs, individual marginals can be close to \(1\) even at arbitrarily large degrees \cite[Theorem~1.7]{ACFK}. Theorem~\ref{thm:overlap} controls their aggregate. For example, writing \(p_e=\PP(e\in M)\), there are absolute constants \(c,C'>0\) such that
+\begin{equation}\label{eq:large-marginals}
+ \sum_{e:\,p_e\ge c/d}p_e\le C'\frac{n}{d}.
+\end{equation}
+Indeed, for \(J=\{e:p_e\ge 2C_1/d\}\), the term \(C_1|J|/d\) is at most half of \(\E |M\cap J|=\sum_{e\in J}p_e\).
+
+For a nonnegative \(n\times n\) matrix \(A=(a_{ij})\), write
+\[
+ \per(A)=\sum_{\pi\in\mathfrak S_n}\prod_{i=1}^n a_{i,\pi(i)}.
+\]
+If \(\per(A)>0\), let \(\mu_A\) be the law on permutations with weights \(\prod_i a_{i,\pi(i)}\), normalized by \(\per(A)\). We also view a permutation of positive weight as a perfect matching between its row and column indices. A matrix is doubly stochastic if it is nonnegative and every row and column sum is \(1\).
+
+\begin{theorem}[Weighted perturbations]\label{thm:weighted}
+Let \(Q_0=(q^0_{ij})\) be an \(n\times n\) doubly stochastic matrix, and put \(\varepsilon=\max_{i,j}q^0_{ij}\). For \(f=(f_{ij})\) with \(0\le f_{ij}\le 1\), let \(Q_0(t)\) have entries \(q^0_{ij}e^{t f_{ij}}\). For every \(t>0\),
+\begin{equation}\label{eq:weighted}
+ \log\frac{\per(Q_0(t))}{\per(Q_0)}
+ \le C_t\left(n\varepsilon+\sum_{i,j}q^0_{ij}f_{ij}\right).
+\end{equation}
+Equivalently, the left-hand side is the logarithm of the moment-generating function of \(X_f(M)=\sum_{(i,j)\in M}f_{ij}\) at \(t\) under \(\mu_{Q_0}\).
+\end{theorem}
+
+For a law \(\rho\) on a finite space, let \(\Ent(\rho)=-\sum_x\rho(x)\log\rho(x)\). For a doubly stochastic \(Q=(q_{ij})\), let \(\Ent_{\max}(Q)\) be the maximum entropy over permutation laws \(\rho\) with \(\PP_{\pi\sim\rho}(\pi(i)=j)=q_{ij}\) for all \(i,j\). The proof gives an entropy comparison as well.
+
+\begin{corollary}[Entropy at prescribed marginals]\label{cor:marginal-entropy}
+There is an absolute constant \(C\) such that every \(n\times n\) doubly stochastic \(Q=(q_{ij})\) satisfies
+\[
+ 0\le \log\per(Q)-\sum_{i,j}q_{ij}\log q_{ij}-\Ent_{\max}(Q)
+ \le Cn\max_{i,j}q_{ij}.
+\]
+\end{corollary}
+
+The prescribed-marginal entropy viewpoint also appears in \cite{OpenAIMatching}, where the entropy is compared with explicit sums of one-coordinate functions on the perfect-matching polytope. Our comparison uses the matching law with edge weights given by the prescribed matrix itself. It is obtained by a change of measure with exactly those marginals.
+
+The central observation is that each perfect matching \(M\) of the support of a doubly stochastic \(Q\) contracts its support to an Eulerian walk \(P_M\). Weighting \(M\) by a rooted tree count of this walk yields a law \(\nu_Q\) with \(\E_{\nu_Q}P_M=QQ^{\trans}\). Consequently \(I-QQ^{\trans}\) is the mean of the symmetrized Laplacians under \(\nu_Q\). Its determinant is a common reference for a pointwise lower bound on the tree weight and an average upper bound on its logarithm. The common term cancels in the relative entropy of \(\nu_Q\) relative to \(\mu_Q\). The determinant also appears in McCullagh's approximation for permanents of moderate-deviation doubly stochastic matrices \cite{McCullagh}. In the present argument it enters through an exact marginal identity.
+
+The directed-to-symmetric determinant comparison makes the argument uniform over graphs with weak cuts. We split the skew operator using the spectral subspaces of the symmetric Laplacian. The squared Frobenius norm controls the number of directions that require geometric approximation. Their coordinates furnish a partition into few classes, using the spread of the transition probabilities, and the original Dirichlet energy bounds the approximation error. On the resulting quotient, the directed matrix-tree formula controls the determinant by a factor exponential in the number of classes. This provides the relative estimate needed for \eqref{eq:weighted}. For absolute permanent estimates, Dong and Jain show that the logarithm of the ratio to the Bethe permanent is bounded by \(2n\log(2)/g\) for support girth at least \(g\) \cite{DongJain}.
+
+\section{Arborescence weighting and exact marginals}\label{sec:trees}
+
+All logarithms are natural and \(0\log 0=0\). For probability laws \(\rho,\pi\) on a finite space with \(\pi>0\) on the support of \(\rho\), set
+\[
+ \KL(\rho\|\pi)=\sum_{x:\,\rho(x)>0}\rho(x)\log\frac{\rho(x)}{\pi(x)}.
+\]
+It is nonnegative by \(s\log s-s+1\ge 0\) for \(s\ge 0\). The support graph of a nonnegative matrix is the bipartite graph of its positive entries. Each connected component of the support graph of a doubly stochastic matrix has the same number of row and column vertices, since both counts equal the total entry weight there. Any set of \(k\) rows sends total weight \(k\) to columns whose individual weight budgets are \(1\), so it has at least \(k\) neighboring columns. To see why this gives a perfect matching, suppose a maximum matching leaves a row unmatched. Start at that row and follow unmatched edges from rows to columns and matched edges from columns to rows. Every reached column would have to be matched, since a path to an unmatched column would allow an augmentation. The reached columns would then be matched bijectively to the reached rows other than the initial row. They are all the neighbors of the reached rows, since the partner of any reached matched row is already reached. This contradicts the neighbor count.
+
+Throughout, \(H_r=\one_r^\perp\) is the subspace orthogonal to the all-ones vector in dimension \(r\). When the dimension is fixed at \(n\), write \(H=H_n\). A subscript \(H_r\) on a determinant or trace denotes restriction to that subspace, with determinant \(1\) in dimension zero. We use complexifications when taking eigenvectors. The symbol \({}^*\) denotes the conjugate transpose.
+
+We use the following form of the directed matrix-tree theorem. Let \(W=(w_{ij})\) be a nonnegative matrix of arc weights such that the positive-weight arcs connect the underlying undirected graph. Suppose the sum of the weights leaving each vertex equals the sum entering it, a condition we call Eulerian. Its row Laplacian is
+\[
+ L(W)=\operatorname{diag}(W\one_r)-W.
+\]
+An arborescence toward \(v\) consists of one outgoing arc from each vertex other than \(v\), with each such vertex reaching \(v\) along the selected arcs. Its weight is the product of the selected weights. If \(\tau_v(W)\) is the sum of these weights, then
+\begin{equation}\label{eq:trees}
+ \tau_v(W)=\frac{1}{r}\det\nolimits_{H_r}L(W)
+ \qquad\text{for every }v.
+\end{equation}
+The underlying matrix-tree identity is classical \cite{Chaiken}. To see it in this setting, expand the determinant of the minor with row and column \(v\) deleted using multilinearity in the rows. Each term chooses one arc \(i\to j\) from each nonroot vertex \(i\). The associated row is the restriction of \(e_i^{\trans}-e_j^{\trans}\) to the nonroot columns, and its coefficient is \(w_{ij}\). If the chosen arcs contain a directed cycle, including a loop, the rows of that cycle sum to zero. Otherwise every vertex reaches \(v\), and ordering rows and columns by distance to \(v\) gives a triangular matrix with diagonal entries \(1\). Thus the principal cofactor is \(\tau_v(W)\).
+
+For Eulerian \(W\), both the row and column sums of \(L(W)\) vanish. Its symmetric part satisfies
+\begin{equation}\label{eq:energy-general}
+ z^*\frac{L(W)+L(W)^{\trans}}{2}z
+   =\frac12\sum_{i,j}w_{ij}|z_i-z_j|^2.
+\end{equation}
+This quadratic form is positive definite on \(H_r\) by connectivity, so \(L(W)\) is invertible on \(H_r\). The left and right null spaces on the full space are spanned by \(\one_r\). Hence the adjugate of \(L(W)\) is a scalar multiple of \(\one_r\one_r^{\trans}\), and all principal cofactors agree. Their sum is the coefficient of \(z\) in \(\det(zI+L(W))=z\det_{H_r}(zI+L(W))\). This gives \eqref{eq:trees}. For \(r=1\) the unique arborescence is empty and has weight \(1\).
+
+Let \(Q\) be doubly stochastic with connected support. For any perfect matching \(M\) of its support, let \(U_M\) have entry \(1\) in position \((i,M(i))\) and zero elsewhere. The matrix
+\[
+ P_M=QU_M^{\trans}, \qquad P_M(u,v)=q_{u,M(v)}
+\]
+is the transition matrix on the row vertices obtained by identifying \(v\) with its matched column \(M(v)\). It is doubly stochastic and its underlying graph is connected. Define \(L_M=I-P_M\) and \(\xi(M)=\det_H L_M\). By \eqref{eq:trees}, \(\xi(M)/n\) is the weight of the arborescences toward any fixed root. It is positive. We define the arborescence-weighted law
+\begin{equation}\label{eq:nu}
+ \nu_Q(M)=\frac{\xi(M)}{\E_{\mu_Q}\xi(M)}\,\mu_Q(M).
+\end{equation}
+
+\begin{lemma}[Exact marginals]\label{lem:marginals}
+For \(Q\) with connected support, \(\E_{\nu_Q}U_M=Q\).
+\end{lemma}
+
+\begin{proof}
+Fix a root \(r\). Consider a matching \(M\), an arborescence of \(P_M\) toward \(r\), and a choice of one additional arc from \(r\). For each vertex \(u\), let \(g_u\) be the column of the arc chosen at \(u\), so that the corresponding arc in the contraction is \(u\to M^{-1}(g_u)\). The resulting map on vertices has a unique directed cycle \(C\), which contains \(r\). The cycle may be a loop. Give this data weight
+\[
+ \prod_{u=1}^n q_{u,M(u)}q_{u,g_u}.
+\]
+Since the outgoing weights from \(r\) sum to \(1\), the marginal law of \(M\) obtained from these weighted data is \(\nu_Q\).
+
+For every \(u\in C\), exchange \(M(u)\) and \(g_u\), leaving all other entries as before. The new matching \(M'\) is a bijection because the columns \(\{g_u:u\in C\}\) are precisely \(\{M(u):u\in C\}\). Relative to \(M'\), the directed cycle is reversed. An arc from outside \(C\) either keeps its endpoint or has its endpoint redirected within \(C\), since only the preimages of columns matched on \(C\) change. Thus the other vertices still reach the cycle. Removing the additional arc from \(r\) leaves an arborescence toward \(r\) for \(P_{M'}\). The operation is an involution and preserves the displayed weight. It exchanges \(M(r)\) and \(g_r\). For each fixed \(M\) and tree, \(g_r\) has law \(q_{r,\cdot}\), so the same is true of \(M(r)\) under \(\nu_Q\). As \(r\) was arbitrary, the conclusion follows.
+\end{proof}
+
+\section{A determinant comparison for Eulerian walks}\label{sec:comparison}
+
+For matrices, \(\|\cdot\|_{\op}\) denotes the Euclidean operator norm, \(\|\cdot\|_{\Frob}\) the Frobenius norm, and \(\|\cdot\|_1\) the trace norm, namely the sum of the singular values. Singular values \(s_j\) are listed in nonincreasing order. We use the fact that \(s_j(B)\) equals the minimum operator-norm error in approximating \(B\) by a matrix of rank less than \(j\). Truncating a singular value decomposition gives the upper bound. Any matrix of rank less than \(j\) annihilates some unit vector in the span of the first \(j\) right singular vectors of \(B\), which gives the lower bound.
+
+\begin{proposition}[Directed and symmetrized Laplacians]\label{prop:comparison}
+Let \(P\) be an \(n\times n\) doubly stochastic matrix whose associated digraph has connected underlying undirected graph. Suppose there is a real \(m>0\) such that, in all but at most \(b\) rows, every column set carrying at least half the row mass has at least \(m\) elements. Write
+\[
+ L=I-P,\qquad S=I-\frac{P+P^{\trans}}{2}.
+\]
+There is an absolute constant \(C\) such that
+\begin{equation}\label{eq:comparison}
+ 0\le \log\frac{\det_H L}{\det_H S}
+ \le C\left(\frac{n}{m}+b+\|P\|_{\Frob}^2\right).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Set \(K=(L-L^{\trans})/2\), so \(L=S+K\). By \eqref{eq:energy-general}, \(S\) is positive definite on \(H\). Jensen's inequality applied to each row, followed by the column-sum identity, gives \(\|P\|_{\op}\le 1\) and hence \(\|S\|_{\op}\le 2\). On \(H\), set \(Z=S^{-1/2}KS^{-1/2}\). It is real skew-symmetric. Factoring \(S^{1/2}\) from \(L\) gives
+\begin{equation}\label{eq:skew-log}
+ \log\frac{\det_H L}{\det_H S}
+ =\log\det\nolimits_H(I+Z)
+ =\frac12\sum_{j=1}^{n-1}\log\bigl(1+s_j(Z)^2\bigr).
+\end{equation}
+Indeed, \((I+Z)^*(I+Z)=I+Z^*Z\), and the eigenvalues of the real skew-symmetric \(Z\) are zero or conjugate purely imaginary pairs, so \(\det_H(I+Z)>0\). This proves the lower bound.
+
+Let \(a\) be the number of eigenvalues of \(S|_H\) smaller than \(1/2\). These contribute more than \(a/4\) to the squared Frobenius norm of \(I-S=(P+P^{\trans})/2\) when \(a>0\). Consequently \(a\le4\|P\|_{\Frob}^2\). Let \(R_+\) be the orthogonal projection on the other eigenspaces of \(S|_H\), and put \(Z_+=R_+ Z R_+\). The two factors \(R_+S^{-1/2}\) have norm at most \(\sqrt{2}\), giving \(\|Z_+\|_{\Frob}\le2\|K\|_{\Frob}\le2\|P\|_{\Frob}\). Also,
+\[
+ Z-Z_+=(I-R_+)Z+R_+Z(I-R_+)
+\]
+has rank at most \(2a\). Write \(k=\min(2a,n-1)\). For \(k+j\le n-1\), adding \(Z-Z_+\) to a rank-\((j-1)\) approximation of \(Z_+\) gives \(s_{k+j}(Z)\le s_j(Z_+)\). Thus the terms in \eqref{eq:skew-log} after the first \(k\) contribute at most \(2\|P\|_{\Frob}^2\). When \(k=0\) this proves the result.
+
+For \(k>0\), let \(U\) have as columns complex orthonormal eigenvectors of \(Z\) for \(k\) eigenvalues of largest absolute value. Define \(V=S^{-1/2}U\) using the inverse on \(H\). Then \(V^*SV=I_k\) and \(V^*KV=U^*ZU\). The first \(k\) terms in \eqref{eq:skew-log} therefore sum to
+\begin{equation}\label{eq:top-modes}
+ \log\bigl|\det(I_k+V^*KV)\bigr|.
+\end{equation}
+
+Let \(v_i\in\mathbb C^k\) be the \(i\)-th row of \(V\), and put
+\[
+ r_i^2=2\sum_j P_{ij}\|v_i-v_j\|_2^2 .
+\]
+The closed ball of radius \(r_i\) about \(v_i\) contains row vectors with total \(i\)-th transition mass at least \(1/2\), by Markov's inequality. If \(r_i=0\), its mass is \(1\). Each ball from a row that satisfies the stated condition contains at least \(m\) vertex indices, counting distinct indices even when vectors coincide. Inspect these balls in nondecreasing order of radius, selecting each ball disjoint from the previously selected ones. The selected balls are disjoint and there are at most \(n/m\) of them. Each inspected row is assigned to its own center if its ball was selected, and otherwise to the center of a previously selected ball that intersects it. The resulting displacement is at most \(2r_i\). Assign each exceptional row to its own vector in a singleton class.
+
+Write \(W_0\) for the \(n\times k\) matrix of assigned vectors. It is constant on the classes of a partition with \(\ell\le n/m+b\) classes. The classes are the groups assigned to each selected center together with the exceptional singletons. Applying \eqref{eq:energy-general} to the columns of \(V\) and writing \(E_0=V-W_0\), we have
+\begin{equation}\label{eq:rounding}
+ \|E_0\|_{\Frob}^2\le4\sum_i r_i^2
+       =16\tr(V^*SV)=16k,\qquad
+ \tr(W_0^*SW_0)\le C k .
+\end{equation}
+The second bound follows from \(\|S^{1/2}W_0\|_{\Frob}\le\sqrt{k}+\sqrt{2}\|E_0\|_{\Frob}\). The partition approximates all selected directions at once in total squared norm, even when their individual Euclidean norms are large.
+
+The contraction property gives
+\[
+ (I-P)^*(I-P)\preceq 2S,\qquad (I-P^{\trans})^*(I-P^{\trans})\preceq 2S
+\]
+in positive semidefinite order. Using \(K=((I-P)-(I-P^{\trans}))/2\) and the triangle inequality gives \(\|KY\|_{\Frob}\le\sqrt{2\tr(Y^*SY)}\) for any column matrix \(Y\). Also \(\|A^*B\|_1\le \|A\|_{\Frob}\|B\|_{\Frob}\) for matrices with equally many rows. This follows from the trace-norm dual formula and the Cauchy--Schwarz inequality for the Frobenius inner product. The dual formula itself follows by taking a singular value decomposition and maximizing the absolute trace pairing against matrices of operator norm at most \(1\). Hence \eqref{eq:rounding} gives
+\begin{align*}
+ \|V^*KV-W_0^*KW_0\|_1
+ &=\|E_0^*KV+W_0^*KE_0\|_1\\
+ &\le\|E_0\|_{\Frob}\bigl(\|KV\|_{\Frob}+\|KW_0\|_{\Frob}\bigr)
+ \le C k.
+\end{align*}
+For skew-Hermitian matrices \(B_1,B_2\) of the same size,
+\begin{equation}\label{eq:lipschitz}
+ \left|\log|\det(I+B_1)|-\log|\det(I+B_2)|\right|\le\|B_1-B_2\|_1 .
+\end{equation}
+Along the line segment between them, \(B\) remains skew-Hermitian and \(\|(I+B)^{-1}\|_{\op}\le1\). The derivative of \(\log|\det(I+B)|\) is the real part of \(\tr((I+B)^{-1}B')\), with absolute value at most \(\|B'\|_1\). Integrating proves \eqref{eq:lipschitz}, so \eqref{eq:top-modes} is bounded by \(Ck+\log|\det(I_k+W_0^*KW_0)|\).
+
+Let \(R\) be the \(n\times\ell\) class indicator matrix. The quotient obtained by identifying each class to a vertex has arc weight matrix \(R^{\trans} P R\). Each new vertex has outgoing and incoming weight equal to its class size. The quotient is thus Eulerian and has connected underlying graph, and its Laplacian is
+\[
+ L_c=R^{\trans}LR=S_c+K_c,\qquad
+ S_c=R^{\trans}SR,\quad K_c=R^{\trans}KR.
+\]
+Let \(Z_c=S_c^{-1/2}K_c S_c^{-1/2}\) on \(H_\ell\) and extend it by zero on the constants. Every arborescence of the quotient toward a given root specifies an undirected spanning tree, and the root determines its orientation toward that root. Each directed arc weight is at most twice the corresponding symmetric weight. Thus the total weight of arborescences toward that root is at most \(2^{\ell-1}\) times the root tree weight for \(S_c\). By \eqref{eq:trees},
+\begin{equation}\label{eq:quotient-tree}
+ \log\det(I_\ell+Z_c)
+    =\log\frac{\det_{H_\ell}L_c}{\det_{H_\ell}S_c}
+    \le(\ell-1)\log 2 .
+\end{equation}
+This includes \(\ell=1\) with \(Z_c=0\).
+
+Write \(W_0=RW_c\) and put \(T=S_c^{1/2}W_c\), so that \(W_0^*KW_0=T^*Z_cT\) and \(\|T\|_{\Frob}^2=\tr(W_0^*SW_0)\le Ck\). The identity uses that \(K_c\) vanishes on the constants. For \(G_0=(I_k+T^*T)^{1/2}\) and \(C_0=T G_0^{-1}\),
+\[
+ I_k+T^*Z_cT=G_0\bigl(G_0^{-2}+C_0^*Z_cC_0\bigr)G_0,\qquad
+ \|C_0\|_{\op}\le1,\quad \|G_0^{-2}\|_{\op}\le1.
+\]
+The singular values of the middle matrix are bounded by \(1+s_j(Z_c)\), padding the singular-value list by zero when needed. In fact, a rank-\((j-1)\) approximation of \(Z_c\) with error \(s_j(Z_c)\) gives, after multiplying by \(C_0^*\) and \(C_0\), a rank-at-most-\((j-1)\) approximation of \(C_0^*Z_cC_0\) with at most that error. The added \(G_0^{-2}\) has norm at most \(1\). Taking products of the singular-value bounds, using \((1+x)^2\le2(1+x^2)\) for \(x\ge0\), and summing gives
+\begin{align*}
+ \log|\det(I_k+W_0^*KW_0)|
+ &\le \log\det(I_k+T^*T)+\sum_{j=1}^{\ell}\log(1+s_j(Z_c))\\
+ &\le \|T\|_{\Frob}^2+\tfrac{\ell}{2}\log 2+\log\det(I_\ell+Z_c)\\
+ &\le C(k+\ell).
+\end{align*}
+The second line also uses \eqref{eq:skew-log} for \(Z_c\), with its zero singular value on the constants. The bound follows from \eqref{eq:quotient-tree}. Combining this with \eqref{eq:lipschitz} and the contribution of the singular values after the first \(k\), and using \(k\le8\|P\|_{\Frob}^2\), proves \eqref{eq:comparison}.
+\end{proof}
+
+The dependence on the number of classes in this comparison has the correct scale for walks with small entries. For integers \(r\ge3\) and \(s\ge1\), take \(r\) classes of size \(s\). From each vertex, choose a uniform vertex in the same class with probability \(1-\eta\) and a uniform vertex in the next class cyclically with probability \(\eta\), where \(0<\eta<1\). The transition matrix is doubly stochastic with entries at most \(1/s\). It vanishes on the space of vectors whose sum in each class is zero. On class-constant vectors the Laplacian is \(\eta(I-C_r)\), where \(C_r\) is the cyclic shift. The directed cycle has one arborescence toward a fixed root, and its symmetrization has \(r\) trees with edge weights \(\eta/2\). The determinant ratio in \eqref{eq:comparison} is therefore \(2^{r-1}/r\). Its logarithm has order \(r=n/s\) as \(r\) grows, uniformly as \(\eta\) tends to zero.
+
+\section{Relative entropy and cancellation of the common determinant}\label{sec:entropy}
+
+For a doubly stochastic \(Q\) with connected support, define
+\[
+ D_Q=I-QQ^{\trans},\qquad S_M=I-\frac{P_M+P_M^{\trans}}2,\qquad
+ a(Q)=\max_{M\in\cM(Q)}\sum_{(i,j)\in M}q_{ij},
+\]
+where \(\cM(Q)\) is the family of perfect matchings of its support. The operator \(D_Q\) is positive definite on \(H\). In fact, equality in the Euclidean contraction \(\|Qz\|_2\le\|z\|_2\) forces \(z\) to be constant on the positive columns of each row, by the equality case of Jensen's inequality. Support connectivity propagates this equality to all columns. The same argument applies to \(Q^{\trans}\), so both are strict contractions on \(H\). The column permutation in \(P_M\) leaves \(H\) invariant, and the singular values of \(P_M|_H\) are those of \(Q|_H\).
+
+\begin{lemma}[Common determinant]\label{lem:entropy}
+For the law \(\nu_Q\) in \eqref{eq:nu},
+\begin{equation}\label{eq:relative}
+ \KL(\nu_Q\|\mu_Q)
+ \le a(Q)+\E_{\nu_Q}\log\frac{\det_H L_M}{\det_H S_M}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let \(\sigma_2,\ldots,\sigma_n\) be the singular values of \(Q|_H\). For each integer \(k\ge2\),
+\[
+ |\tr_H(P_M^k)|\le\sum_{j=2}^n\sigma_j^k.
+\]
+For a proof, take a complex Schur orthonormal basis of \(P_M|_H\). If its triangular diagonal entries are \(\lambda_i\), then for the corresponding basis vectors \(v_i\) we have \(|\lambda_i|^2\le v_i^*P_M^*P_M v_i\). Each latter diagonal entry is a convex combination of eigenvalues of \(P_M^*P_M|_H\). Jensen's inequality for \(x^{k/2}\), followed by summation over the orthonormal basis, proves \(\sum_i|\lambda_i|^k\le\sum_j\sigma_j^k\). The trace bound follows by triangularity.
+
+Since \(P_M|_H\) has norm smaller than \(1\), we can expand the logarithm of its Laplacian determinant in traces. For example, differentiating \(\log\det_H(I-u P_M)\) for \(0\le u\le1\) and integrating the uniformly convergent Neumann series gives
+\[
+ \log\xi(M)=-\sum_{k\ge1}\frac{\tr_H(P_M^k)}{k}.
+\]
+The determinant in this differentiation is positive, since it is nonzero on the whole interval and equals \(1\) at \(u=0\). Using \(-\log(1-x)-x\le-\log(1-x^2)\) for \(0\le x<1\), we obtain
+\begin{align}
+ \log\xi(M)
+ &\ge -\tr_H P_M-\sum_{j=2}^n\bigl[-\log(1-\sigma_j)-\sigma_j\bigr]
+ \notag\\
+ &\ge \log\det_H D_Q-a(Q).
+ \label{eq:xi-lower}
+\end{align}
+Here \(\tr_H P_M=\sum_{(i,j)\in M}q_{ij}-1\), and \(\det_H D_Q=\prod_{j=2}^n(1-\sigma_j^2)\). Thus \(\log\E_{\mu_Q}\xi\ge\log\det_H D_Q-a(Q)\).
+
+Lemma~\ref{lem:marginals} gives \(\E_{\nu_Q}P_M=QQ^{\trans}\), so \(\E_{\nu_Q}S_M=D_Q\). Concavity of \(\log\det\) on positive definite matrices implies
+\[
+ \E_{\nu_Q}\log\det_H S_M\le \log\det_H D_Q.
+\]
+Concavity follows by differentiating along a line \(A+uB\) of positive definite matrices with \(B\) symmetric, where the second derivative is
+\(-\tr(((A+uB)^{-1/2}B(A+uB)^{-1/2})^2)\le0\).
+We conclude that
+\[
+ \E_{\nu_Q}\log\xi
+ \le \log\det_H D_Q+\E_{\nu_Q}\log\frac{\det_H L_M}{\det_H S_M}.
+\]
+By \eqref{eq:nu}, the difference \(\E_{\nu_Q}\log\xi-\log\E_{\mu_Q}\xi\) is \(\KL(\nu_Q\|\mu_Q)\). Subtracting the bounds cancels \(\log\det_H D_Q\) and proves the lemma.
+\end{proof}
+
+If all but \(b\) rows of \(Q\) require at least \(m\) columns to carry half their mass, the same property holds for every \(P_M\). Its Frobenius norm equals that of \(Q\). Proposition~\ref{prop:comparison} and Lemma~\ref{lem:entropy} give
+\begin{equation}\label{eq:entropy-bound}
+ \KL(\nu_Q\|\mu_Q)\le
+ a(Q)+C\left(\frac{n}{m}+b+\|Q\|_{\Frob}^2\right).
+\end{equation}
+The common determinant in the proof can be arbitrarily small as the support approaches a separation into components. A concrete example also shows the scale on which the individual tree weights can vary. Start with two copies of \(K_{d,d}\) for \(d\ge2\), delete the edge from row \(1\) to column \(1\) in each copy, and add the two crossed edges between their former endpoints. Use \(Q=A/d\) for the resulting graph. Let \(M_0\) exchange columns \(1\) and \(2\) within each copy and match every other row to the identically numbered column. Let \(M_1\) use the two crossed edges and match identically on the remaining vertices. For both \(P_{M_0}\) and \(P_{M_1}\), the block-symmetric subspace \(\{(v,v):v\in\mathbb R^d\}\) has induced matrix \(J_d/d\), with \(J_d\) the all-ones matrix. On the antisymmetric subspace \(\{(v,-v):v\in\mathbb R^d\}\) their matrices are respectively
+\[
+ J_d/d-2e_1e_2^{\trans}/d,\qquad
+ J_d/d-2(\one_d-e_1)e_1^{\trans}/d.
+\]
+Indeed, for \(M_0\) only row \(1\) sends the arc for column \(1\) into the other block, where that column is owned by row \(2\). For \(M_1\) all rows except row \(1\) send the arc for column \(1\) to row \(1\) in the other block. The rank-one determinant identity and \(\operatorname{adj}(I-J_d/d)=J_d/d\) then give antisymmetric Laplacian determinants \(2/d^2\) and \(2(d-1)/d^2\). The symmetric contributions on the orthogonal complement of the constants agree. Thus \(\xi(M_1)/\xi(M_0)=d-1\) although \(n/d=2\). Inequality \eqref{eq:relative} compares the logarithmic averages through their common determinant, allowing such variation in \(\xi\).
+
+\begin{proof}[Proof of Corollary~\ref{cor:marginal-entropy}]
+First suppose that \(Q\) has connected support and let \(\varepsilon=\max q_{ij}\). We have \(a(Q)\le n\varepsilon\), \(\|Q\|_{\Frob}^2\le n\varepsilon\), and can take \(m=1/(2\varepsilon)\), \(b=0\) in \eqref{eq:entropy-bound}. Thus \(\KL(\nu_Q\|\mu_Q)\le Cn\varepsilon\). For a disconnected support, use the product of the arborescence-weighted laws on the components. It has marginals \(Q\), and its relative entropy with respect to the product law \(\mu_Q\) is the sum of the component bounds, still at most \(Cn\varepsilon\). In particular the feasible set defining \(\Ent_{\max}(Q)\) is nonempty. It is a closed subset of a finite probability simplex, so the maximum is attained.
+
+Every feasible law \(\rho\) is supported on \(\cM(Q)\), since an edge of zero marginal is almost surely unused. For such a law,
+\[
+ \KL(\rho\|\mu_Q)=\log\per(Q)-\sum_{i,j}q_{ij}\log q_{ij}-\Ent(\rho).
+\]
+Minimizing over \(\rho\) proves the lower bound by nonnegativity of relative entropy. Using the law with relative entropy at most \(Cn\varepsilon\) proves the upper bound.
+\end{proof}
+
+\section{Bounded perturbations of matching weights}\label{sec:tilt}
+
+\begin{proof}[Proof of Theorem~\ref{thm:weighted}]
+The law \(\mu_{Q_0}\) and the exponential weights on matchings factor over the connected components of the support of \(Q_0\). A component has equal part sizes, and its maximum entry is at most \(\varepsilon\). The right-hand side of \eqref{eq:weighted}, with \(\varepsilon\) kept as a common bound, is additive over the components. It suffices to work with connected support.
+
+Write \(x_0=\sum_{i,j}q^0_{ij} f_{ij}\). To scale the perturbed weights back to a doubly stochastic matrix, maximize
+\[
+ t\sum_{i,j}q_{ij}f_{ij}-\mathcal D(Q\|Q_0),\qquad
+ \mathcal D(Q\|Q_0)
+ =\sum_{i,j:\,q^0_{ij}>0}
+ \left(q_{ij}\log\frac{q_{ij}}{q^0_{ij}}-q_{ij}+q^0_{ij}\right),
+\]
+over all doubly stochastic \(Q\) with support contained in that of \(Q_0\). This is the entropy formulation of diagonal scaling \cite{SinkhornKnopp}. The objective is continuous on a nonempty compact polytope, so there is a maximizer \(Q\). It is positive on every original support entry. Indeed, if some such entry is zero, replacing \(Q\) by \((1-\delta)Q+\delta Q_0\) adds a positive term of order \(\delta\log(1/\delta)\) to the objective at that entry. The original positive entries and the linear term contribute changes of order at most \(\delta\), contradicting maximality for small enough \(\delta>0\).
+
+We can therefore differentiate in every direction supported on the original support and having row and column sums zero. The gradient is orthogonal to the kernel of the row-and-column sum map. It belongs to the image of the transpose of that map, whose entries on the support are sums of row and column potentials. It follows that for positive entries
+\[
+ q_{ij}=q^0_{ij}\exp\bigl(tf_{ij}+\alpha_i+\beta_j\bigr)
+\]
+for some real potentials \(\alpha_i,\beta_j\). Since a perfect matching uses each row and column once, the factor \(\exp(\sum_i\alpha_i+\sum_j\beta_j)\) is common to all its weights. Thus with \(Z_t=\E_{\mu_{Q_0}}\exp(tX_f)\) we have
+\begin{equation}\label{eq:mu-tilt}
+ \mu_Q(M)=Z_t^{-1}\,e^{tX_f(M)}\,\mu_{Q_0}(M).
+\end{equation}
+
+Let \(x=\sum_{i,j}q_{ij}f_{ij}\) and \(\Delta=\mathcal D(Q\|Q_0)\). Comparing the objective with its value at \(Q_0\) shows \(\Delta\le t(x-x_0)\le tx\). For any real \(h=(h_{ij})\), the scalar inequality \(u\log u-u+1\ge uh-e^h+1\) for \(u\ge0\) gives
+\begin{equation}\label{eq:duality}
+ \Delta\ge\sum_{i,j}q_{ij}h_{ij}-\sum_{i,j}q^0_{ij}(e^{h_{ij}}-1).
+\end{equation}
+The scalar inequality follows by minimizing its difference in \(u\), which attains zero at \(u=e^h\). Apply \eqref{eq:duality} with \(h=(t+1)f\). Convexity of the exponential gives \(e^{(t+1)u}-1\le(e^{t+1}-1)u\) for \(0\le u\le1\), so
+\[
+ (t+1)x-(e^{t+1}-1)x_0\le\Delta\le tx .
+\]
+Consequently \(x=O_t(x_0)\) and \(\Delta=O_t(x_0)\).
+
+For each matching \(M\), applying \eqref{eq:duality} with \(h\) the indicator matrix of \(M\) gives
+\[
+ \sum_{(i,j)\in M}q_{ij}\le \Delta+(e-1)n\varepsilon.
+\]
+Moreover \(\|Q_0\|_{\Frob}^2\le n\varepsilon\) and \(\Delta\ge \tfrac12\|Q-Q_0\|_{\Frob}^2\). For the second inequality, each summand as a function of \(q_{ij}\in[0,1]\) is zero with zero derivative at \(q^0_{ij}\), and its second derivative at a positive argument is at least \(1\). The inequality extends to zero by continuity. It follows that
+\begin{equation}\label{eq:tilt-norms}
+ a(Q)\le \Delta+(e-1)n\varepsilon,\qquad
+ \|Q\|_{\Frob}^2\le 2n\varepsilon+4\Delta .
+\end{equation}
+
+Take \(m=1/(4\varepsilon)\). If row \(i\) fails the spread condition with this \(m\), some column set \(B\) of size smaller than \(m\) has \(Q\)-mass at least \(1/2\) in that row and \(Q_0\)-mass at most \(1/4\). The row version of \eqref{eq:duality} with \(h_{ij}=(\log 2)\one_B(j)\) shows that the contribution of this row to \(\Delta\) is at least
+\[
+ \tfrac12\log 2-\tfrac14>0.
+\]
+Because the row contributions are nonnegative, at most \(O(\Delta)\) rows fail the condition. Substituting these bounds and \eqref{eq:tilt-norms} in \eqref{eq:entropy-bound} yields
+\[
+ \KL(\nu_Q\|\mu_Q)=O_t(n\varepsilon+x_0).
+\]
+
+From \eqref{eq:mu-tilt} and nonnegativity of \(\KL(\nu_Q\|\mu_{Q_0})\),
+\begin{align*}
+ \log Z_t
+ &=\KL(\nu_Q\|\mu_Q)-\KL(\nu_Q\|\mu_{Q_0})+t\E_{\nu_Q}X_f\\
+ &\le\KL(\nu_Q\|\mu_Q)+tx
+ \le C_t(n\varepsilon+x_0).
+\end{align*}
+The identity \(\E_{\nu_Q}X_f=x\) is Lemma~\ref{lem:marginals}. Finally \(Z_t=\per(Q_0(t))/\per(Q_0)\) by definition. This proves \eqref{eq:weighted}.
+\end{proof}
+
+\begin{proof}[Proofs of Theorems~\ref{thm:overlap} and \ref{thm:fixed}]
+For Theorem~\ref{thm:overlap}, let \(A\) be the bipartite adjacency matrix of \(G\) and \(Q_0=A/d\). It is doubly stochastic, has maximum entry \(1/d\), and \(\mu_{Q_0}\) is uniform on perfect matchings. Set \(f_{ij}=1\) on \(J\) and \(0\) elsewhere. Then \(\sum q^0_{ij}f_{ij}=|J|/d\), and \eqref{eq:weighted} gives the claimed exponential-moment bound. Jensen's inequality at \(t=1\) proves the expectation bound.
+
+For Theorem~\ref{thm:fixed}, use the bipartite representation and let \(J\) be the set of edges corresponding to loops. Its size is at most \(n\). The bijection with cycle factors preserves the uniform law, and the overlap with \(J\) equals the number of fixed points. In a complete looped digraph on \(d\) vertices, the uniform cycle factor is a uniform permutation and every vertex is fixed with probability \(1/d\). The disjoint union in the statement therefore has expectation exactly \(n/d\).
+\end{proof}
+
+\begin{thebibliography}{99}
+
+\bibitem{ACFK}
+M. Ab\'ert, P. Csikv\'ari, P. E. Frenkel, and G. Kun,
+\emph{Matchings in Benjamini--Schramm convergent graph sequences},
+Trans. Amer. Math. Soc. \textbf{368} (2016), 4197--4218.
+\href{https://doi.org/10.1090/tran/6464}{doi:10.1090/tran/6464}.
+
+\bibitem{Bregman}
+L. M. Br\`egman,
+\emph{Some properties of nonnegative matrices and their permanents},
+Dokl. Akad. Nauk SSSR \textbf{211} (1973), 27--30.
+English translation in Soviet Math. Dokl. \textbf{14} (1973), 945--949.
+
+\bibitem{Chaiken}
+S. Chaiken,
+\emph{A combinatorial proof of the all minors matrix tree theorem},
+SIAM J. Algebraic Discrete Methods \textbf{3} (1982), 319--329.
+\href{https://doi.org/10.1137/0603033}{doi:10.1137/0603033}.
+
+\bibitem{ChristophEtAl}
+M. Christoph, N. Dragani\'c, A. Gir\~ao, E. Hurley, L. Michel, and A. M\"uyesser,
+\emph{Cycle-factors of regular graphs via entropy},
+Proc. 66th IEEE Symp. Foundations of Computer Science (FOCS), 2025, 615--619.
+\href{https://arxiv.org/abs/2507.19417v3}{arXiv:2507.19417v3}.
+
+\bibitem{DongJain}
+D. Dong and V. Jain,
+\emph{Optimal girth-dependent bounds for the Bethe approximation of the permanent},
+preprint, 2026.
+\href{https://arxiv.org/abs/2609.02017}{arXiv:2609.02017}.
+
+\bibitem{GranetJoos}
+B. Granet and F. Joos,
+\emph{Random perfect matchings in regular graphs},
+Random Structures Algorithms \textbf{64} (2024), 3--14.
+\href{https://doi.org/10.1002/rsa.21172}{doi:10.1002/rsa.21172}.
+
+\bibitem{McCullagh}
+P. McCullagh,
+\emph{An asymptotic approximation for the permanent of a doubly stochastic matrix},
+J. Stat. Comput. Simul. \textbf{84} (2014), 404--414.
+\href{https://doi.org/10.1080/00949655.2012.712122}{doi:10.1080/00949655.2012.712122}.
+
+\bibitem{OpenAIMatching}
+OpenAI,
+\emph{Entropy and Face Dimension of the Perfect-Matching Polytope},
+preprint, September 2026.
+\href{https://github.com/openai/math/tree/main/preprints/Entropy-and-Face-Dimension-of-the-Perfect-Matching-Polytope-September-23-2026}{Repository source}.
+
+\bibitem{Schrijver}
+A. Schrijver,
+\emph{Counting 1-factors in regular bipartite graphs},
+J. Combin. Theory Ser. B \textbf{72} (1998), 122--135.
+\href{https://doi.org/10.1006/jctb.1997.1798}{doi:10.1006/jctb.1997.1798}.
+
+\bibitem{SinkhornKnopp}
+R. Sinkhorn and P. Knopp,
+\emph{Concerning nonnegative matrices and doubly stochastic matrices},
+Pacific J. Math. \textbf{21} (1967), 343--348.
+\href{https://doi.org/10.2140/pjm.1967.21.343}{doi:10.2140/pjm.1967.21.343}.
+
+\bibitem{Zheng}
+L. Zheng,
+\emph{Fixed points in random cycle factors of \(d\)-regular directed graphs},
+manuscript, August 2026.
+
+\end{thebibliography}
+
+\end{document}
